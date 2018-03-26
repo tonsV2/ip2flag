@@ -30,10 +30,8 @@ class Ip2FlagController {
 
     @GetMapping(value = ["/ip2flag/{ip}/{size}"], produces = [MediaType.IMAGE_PNG_VALUE])
     fun ip2flagWithSize(@PathVariable ip: String, @PathVariable size: Int): Resource {
-        // TODO: Service - Locale by ip...
         val locale: Locale = ip2locale(ip)
-        // TODO: FlagByLocaleService
-        return findResource(locale, size)
+        return findResource(locale.displayCountry, size)
     }
 
     @GetMapping(value = ["/ip2flag/{ip}"], produces = [MediaType.IMAGE_PNG_VALUE])
@@ -59,8 +57,8 @@ class Ip2FlagController {
     }
 
 
-    private fun findResource(locale: Locale, size: Int = 16): Resource {
-        val locationPattern = "images/Final Flags/PNG/$size/*${locale.displayCountry.toLowerCase()}*.png"
+    private fun findResource(country: String, size: Int = 16): Resource {
+        val locationPattern = "images/Final Flags/PNG/$size/*${country.toLowerCase()}*.png"
         val resolver = PathMatchingResourcePatternResolver()
         val resources = resolver.getResources(locationPattern)
         return resources[0]

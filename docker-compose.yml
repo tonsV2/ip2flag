@@ -8,5 +8,9 @@ services:
       - 8080:8080
     depends_on:
       - country-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      BACKEND_URL: http://country-service:8080/ip2country/
+
   country-service:
     image: tons/ip2country

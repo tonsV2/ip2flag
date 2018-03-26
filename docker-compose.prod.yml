@@ -1,0 +1,11 @@
+version: "2"
+
+services:
+  app:
+    image: tons/ip2flag
+    ports:
+      - 8080:8080
+    depends_on:
+      - country-service
+  country-service:
+    image: tons/ip2country

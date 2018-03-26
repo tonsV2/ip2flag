@@ -1,7 +1,9 @@
 package dk.fitfit.ip2flag.api
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.http.MediaType
@@ -22,7 +24,7 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-class Ip2FlagController {
+class Ip2FlagController(val appConfiguration: AppConfiguration) {
     @GetMapping("/ip2flagemoji/{ip}")
     fun ip2emojiflag(@PathVariable ip: String): String {
         TODO("https://stackoverflow.com/questions/42234666/get-emoji-flag-by-country-code/42235254")
@@ -46,7 +48,8 @@ class Ip2FlagController {
     }
 
     private fun ip2locale(ip: String): Locale {
-        val data = readStringFromURL("http://country-service:8080/ip2country/$ip")
+        val apiUrl = appConfiguration.url
+        val data = readStringFromURL("$apiUrl$ip")
         return Locale("", data)
 /*
         val data = readStringFromURL("http://ip2c.org/$ip")
@@ -76,3 +79,7 @@ class Ip2FlagController {
         })
     }
 }
+
+@Configuration
+@ConfigurationProperties("backend")
+open class AppConfiguration(var url: String = "")

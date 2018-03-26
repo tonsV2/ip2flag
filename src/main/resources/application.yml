@@ -1,0 +1,10 @@
+backend:
+  url: http://localhost:8080/ip2country/ # TODO: Point to remote
+
+---
+
+spring:
+  profiles: docker
+
+backend:
+  url: ${BACKEND_URL}

@@ -28,17 +28,26 @@ class Ip2FlagController {
         TODO("https://stackoverflow.com/questions/42234666/get-emoji-flag-by-country-code/42235254")
     }
 
-    @GetMapping(value = ["/ip2flag/{ip}"], produces = [MediaType.IMAGE_PNG_VALUE])
-    fun ip2flag(@PathVariable ip: String): Resource {
+    @GetMapping(value = ["/ip2flag/{ip}/{size}"], produces = [MediaType.IMAGE_PNG_VALUE])
+    fun ip2flagWithSize(@PathVariable ip: String, @PathVariable size: Int): Resource {
         // TODO: Service - Locale by ip...
-        val data = readStringFromURL("http://ip2c.org/$ip")
+        val data = lookupIp(ip)
         val locale: Locale = toLocale(data)
         // TODO: FlagByLocaleService
-        return findResource(locale)
+        return findResource(locale, size)
     }
 
-    private fun findResource(locale: Locale): Resource {
-        val locationPattern = "images/Final Flags/PNG/16/*${locale.displayCountry.toLowerCase()}*.png"
+    private fun lookupIp(ip: String): String {
+        return readStringFromURL("http://ip2c.org/$ip")
+    }
+
+    @GetMapping(value = ["/ip2flag/{ip}"], produces = [MediaType.IMAGE_PNG_VALUE])
+    fun ip2flag(@PathVariable ip: String): Resource {
+        return ip2flagWithSize(ip, 16)
+    }
+
+    private fun findResource(locale: Locale, size: Int = 16): Resource {
+        val locationPattern = "images/Final Flags/PNG/$size/*${locale.displayCountry.toLowerCase()}*.png"
         val resolver = PathMatchingResourcePatternResolver()
         val resources = resolver.getResources(locationPattern)
         return resources[0]

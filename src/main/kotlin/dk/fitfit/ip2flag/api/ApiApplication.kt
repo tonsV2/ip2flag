@@ -56,7 +56,6 @@ class Ip2FlagController {
         }
     }
 
-
     private fun findResource(country: String, size: Int = 16): Resource {
         val locationPattern = "images/Final Flags/PNG/$size/*${country.toLowerCase()}*.png"
         val resolver = PathMatchingResourcePatternResolver()

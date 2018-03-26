@@ -46,6 +46,9 @@ class Ip2FlagController {
     }
 
     private fun ip2locale(ip: String): Locale {
+        val data = readStringFromURL("http://localhost:8080/ip2country/$ip")
+        return Locale("", data)
+/*
         val data = readStringFromURL("http://ip2c.org/$ip")
         val split = data.split(";")
         return when (split[0]) {
@@ -54,6 +57,7 @@ class Ip2FlagController {
             "2" -> throw Exception("Not found in database")
             else -> throw IllegalArgumentException("Not sure what happened...")
         }
+*/
     }
 
     private fun findResource(country: String, size: Int = 16): Resource {

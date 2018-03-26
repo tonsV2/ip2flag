@@ -46,7 +46,7 @@ class Ip2FlagController {
     }
 
     private fun ip2locale(ip: String): Locale {
-        val data = readStringFromURL("http://localhost:8080/ip2country/$ip")
+        val data = readStringFromURL("http://country-service:8080/ip2country/$ip")
         return Locale("", data)
 /*
         val data = readStringFromURL("http://ip2c.org/$ip")

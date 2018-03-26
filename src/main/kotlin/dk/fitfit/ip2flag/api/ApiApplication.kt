@@ -31,21 +31,9 @@ class Ip2FlagController {
     @GetMapping(value = ["/ip2flag/{ip}/{size}"], produces = [MediaType.IMAGE_PNG_VALUE])
     fun ip2flagWithSize(@PathVariable ip: String, @PathVariable size: Int): Resource {
         // TODO: Service - Locale by ip...
-        val data = lookupIp(ip)
-        val locale: Locale = toLocale(data)
+        val locale: Locale = ip2locale(ip)
         // TODO: FlagByLocaleService
         return findResource(locale, size)
-    }
-
-    @GetMapping("/ip2country/{ip}")
-    fun ip2country(@PathVariable ip: String): String {
-        val data = lookupIp(ip)
-        val locale: Locale = toLocale(data)
-        return locale.displayCountry
-    }
-
-    private fun lookupIp(ip: String): String {
-        return readStringFromURL("http://ip2c.org/$ip")
     }
 
     @GetMapping(value = ["/ip2flag/{ip}"], produces = [MediaType.IMAGE_PNG_VALUE])
@@ -53,21 +41,29 @@ class Ip2FlagController {
         return ip2flagWithSize(ip, 16)
     }
 
+    @GetMapping("/ip2country/{ip}")
+    fun ip2country(@PathVariable ip: String): String {
+        val locale: Locale = ip2locale(ip)
+        return locale.displayCountry
+    }
+
+    private fun ip2locale(ip: String): Locale {
+        val data = readStringFromURL("http://ip2c.org/$ip")
+        val split = data.split(";")
+        return when (split[0]) {
+            "0" -> throw Exception("Something went wrong")
+            "1" -> Locale("", split[1])
+            "2" -> throw Exception("Not found in database")
+            else -> throw IllegalArgumentException("Not sure what happened...")
+        }
+    }
+
+
     private fun findResource(locale: Locale, size: Int = 16): Resource {
         val locationPattern = "images/Final Flags/PNG/$size/*${locale.displayCountry.toLowerCase()}*.png"
         val resolver = PathMatchingResourcePatternResolver()
         val resources = resolver.getResources(locationPattern)
         return resources[0]
-    }
-
-    private fun toLocale(data: String): Locale {
-        val split = data.split(";")
-        return when (split[0]) {
-            "0" -> throw Exception("Soemthing went wrong")
-            "1" -> Locale("", split[1])
-            "2" -> throw Exception("Not found in database")
-            else -> throw IllegalArgumentException("Not sure what happened...")
-        }
     }
 
     @Throws(IOException::class)

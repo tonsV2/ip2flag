@@ -37,6 +37,13 @@ class Ip2FlagController {
         return findResource(locale, size)
     }
 
+    @GetMapping("/ip2country/{ip}")
+    fun ip2country(@PathVariable ip: String): String {
+        val data = lookupIp(ip)
+        val locale: Locale = toLocale(data)
+        return locale.displayCountry
+    }
+
     private fun lookupIp(ip: String): String {
         return readStringFromURL("http://ip2c.org/$ip")
     }

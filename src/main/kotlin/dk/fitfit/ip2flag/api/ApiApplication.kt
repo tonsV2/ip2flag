@@ -1,5 +1,7 @@
 package dk.fitfit.ip2flag.api
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.runApplication
@@ -23,26 +25,35 @@ fun main(args: Array<String>) {
     runApplication<ApiApplication>(*args)
 }
 
+//@Bean
+//fun logger(injectionPoint: InjectionPoint) : Logger = LoggerFactory.getLogger(injectionPoint.methodParameter?.containingClass)
+
 @RestController
-class Ip2FlagController(val appConfiguration: AppConfiguration) {
+class Ip2FlagController(private val appConfiguration: AppConfiguration) {
+    private val logger: Logger = LoggerFactory.getLogger(Ip2FlagController::class.java)
+
     @GetMapping("/ip2flagemoji/{ip}")
     fun ip2emojiflag(@PathVariable ip: String): String {
+        logger.info("/ip2flagemoji/$ip")
         TODO("https://stackoverflow.com/questions/42234666/get-emoji-flag-by-country-code/42235254")
     }
 
     @GetMapping(value = ["/ip2flag/{ip}/{size}"], produces = [MediaType.IMAGE_PNG_VALUE])
     fun ip2flagWithSize(@PathVariable ip: String, @PathVariable size: Int): Resource {
+        logger.info("/ip2flag/$ip/$size")
         val locale: Locale = ip2locale(ip)
         return findResource(locale.displayCountry, size)
     }
 
     @GetMapping(value = ["/ip2flag/{ip}"], produces = [MediaType.IMAGE_PNG_VALUE])
     fun ip2flag(@PathVariable ip: String): Resource {
+        logger.info("/ip2flag/$ip")
         return ip2flagWithSize(ip, 16)
     }
 
     @GetMapping("/ip2country/{ip}")
     fun ip2country(@PathVariable ip: String): String {
+        logger.info("/ip2country/$ip")
         val locale: Locale = ip2locale(ip)
         return locale.displayCountry
     }

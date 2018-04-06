@@ -6,7 +6,4 @@ RUN ./gradlew -DskipTests clean bootJar
 FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=builder /app/build/libs/*-SNAPSHOT.jar .
-CMD java -Dserver.port=$PORT -jar *.jar
-
-EXPOSE 8080
-
+CMD java -jar *.jar

@@ -1,23 +1,21 @@
 package dk.fitfit.ip2flag.api
 
+import feign.Param
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Configuration
+import org.springframework.cloud.netflix.feign.EnableFeignClients
+import org.springframework.cloud.netflix.feign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
-import java.io.IOException
-import java.net.URL
-import java.nio.charset.StandardCharsets
 import java.util.*
 
-
+@EnableFeignClients
 @SpringBootApplication
 open class ApiApplication
 
@@ -29,7 +27,7 @@ fun main(args: Array<String>) {
 //fun logger(injectionPoint: InjectionPoint) : Logger = LoggerFactory.getLogger(injectionPoint.methodParameter?.containingClass)
 
 @RestController
-class Ip2FlagController(private val appConfiguration: AppConfiguration) {
+class Ip2FlagController(private val countryClient: Ip2CountryClient) {
     private val logger: Logger = LoggerFactory.getLogger(Ip2FlagController::class.java)
 
     @GetMapping("/ip2flagemoji/{ip}")
@@ -59,38 +57,20 @@ class Ip2FlagController(private val appConfiguration: AppConfiguration) {
     }
 
     private fun ip2locale(ip: String): Locale {
-        val apiUrl = appConfiguration.url
-        val data = readStringFromURL("$apiUrl$ip")
-        return Locale("", data)
-/*
-        val data = readStringFromURL("http://ip2c.org/$ip")
-        val split = data.split(";")
-        return when (split[0]) {
-            "0" -> throw Exception("Something went wrong")
-            "1" -> Locale("", split[1])
-            "2" -> throw Exception("Not found in database")
-            else -> throw IllegalArgumentException("Not sure what happened...")
-        }
-*/
+        val country = countryClient.findCountry(ip)
+        return Locale("", country)
     }
 
     private fun findResource(country: String, size: Int = 16): Resource {
         val locationPattern = "images/Final Flags/PNG/$size/*${country.toLowerCase()}*.png"
-        val resolver = PathMatchingResourcePatternResolver()
-        val resources = resolver.getResources(locationPattern)
+        val resources = PathMatchingResourcePatternResolver().getResources(locationPattern)
         return resources[0]
-    }
-
-    @Throws(IOException::class)
-    private fun readStringFromURL(requestURL: String): String {
-        val stream = URL(requestURL).openStream()
-        Scanner(stream, StandardCharsets.UTF_8.toString()).use({ scanner ->
-            scanner.useDelimiter("\\A")
-            return if (scanner.hasNext()) scanner.next() else ""
-        })
     }
 }
 
-@Configuration
-@ConfigurationProperties("backend")
-open class AppConfiguration(var url: String = "")
+// TODO: Don't hardcode url!!!
+@FeignClient(url = "http://country-service:8080/api")
+interface Ip2CountryClient {
+    @GetMapping("/ip2country/{ip}")
+    fun findCountry(@Param("ip") ip: String): String
+}

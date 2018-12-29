@@ -6,4 +6,5 @@ RUN ./gradlew -DskipTests clean bootJar
 FROM openjdk:8-jre-alpine
 WORKDIR /app
 COPY --from=builder /src/build/libs/*-SNAPSHOT.jar .
+USER guest
 CMD java -jar *.jar

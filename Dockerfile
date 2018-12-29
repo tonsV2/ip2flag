@@ -1,9 +1,9 @@
 FROM openjdk:8-jdk-alpine as builder
-WORKDIR /app
-ADD . /app
+WORKDIR /src
+ADD . /src
 RUN ./gradlew -DskipTests clean bootJar
 
 FROM openjdk:8-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/build/libs/*-SNAPSHOT.jar .
+COPY --from=builder /src/build/libs/*-SNAPSHOT.jar .
 CMD java -jar *.jar

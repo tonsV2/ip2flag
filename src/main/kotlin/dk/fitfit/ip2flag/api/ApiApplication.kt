@@ -1,12 +1,11 @@
 package dk.fitfit.ip2flag.api
 
-import feign.Param
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.cloud.netflix.feign.EnableFeignClients
-import org.springframework.cloud.netflix.feign.FeignClient
+import org.springframework.cloud.openfeign.EnableFeignClients
+import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.http.MediaType
@@ -22,9 +21,6 @@ open class ApiApplication
 fun main(args: Array<String>) {
     runApplication<ApiApplication>(*args)
 }
-
-//@Bean
-//fun logger(injectionPoint: InjectionPoint) : Logger = LoggerFactory.getLogger(injectionPoint.methodParameter?.containingClass)
 
 @RestController
 class Ip2FlagController(private val countryClient: Ip2CountryClient) {
@@ -69,8 +65,8 @@ class Ip2FlagController(private val countryClient: Ip2CountryClient) {
 }
 
 // TODO: Don't hardcode url!!!
-@FeignClient(url = "http://country-service:8080/api")
+@FeignClient(name = "countryClient", url = "http://country-service:8080")
 interface Ip2CountryClient {
     @GetMapping("/ip2country/{ip}")
-    fun findCountry(@Param("ip") ip: String): String
+    fun findCountry(@PathVariable ip: String): String
 }

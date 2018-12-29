@@ -39,10 +39,10 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	compile('org.springframework.cloud:spring-cloud-starter-openfeign:2.0.2.RELEASE')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")

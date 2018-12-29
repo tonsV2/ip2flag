@@ -64,8 +64,7 @@ class Ip2FlagController(private val countryClient: Ip2CountryClient) {
     }
 }
 
-// TODO: Don't hardcode url!!!
-@FeignClient(name = "countryClient", url = "http://country-service:8080")
+@FeignClient(name = "\${feign.name}", url = "\${feign.url}")
 interface Ip2CountryClient {
     @GetMapping("/ip2country/{ip}")
     fun findCountry(@PathVariable ip: String): String

@@ -10,7 +10,7 @@ services:
       - country-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      BACKEND_URL: http://country-service:8080/ip2country/
+      COUNTRY_SERVICE_URL: ${COUNTRY_SERVICE_URL}
 
   country-service:
     image: tons/ip2country

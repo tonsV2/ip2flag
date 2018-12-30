@@ -7,10 +7,10 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - country-service
+      - ip2country
     environment:
       SPRING_PROFILES_ACTIVE: docker
       COUNTRY_SERVICE_URL: ${COUNTRY_SERVICE_URL}
 
-  country-service:
+  ip2country:
     image: tons/ip2country

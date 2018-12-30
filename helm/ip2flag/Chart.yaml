@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for ip2flag
+name: ip2flag
+version: 0.1.0

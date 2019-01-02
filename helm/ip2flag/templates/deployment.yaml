@@ -26,6 +26,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: docker
+            - name: COUNTRY_SERVICE_URL
+              value: http://ip2country.svc.cluster.local:8080
           ports:
             - name: http
               containerPort: 8080
